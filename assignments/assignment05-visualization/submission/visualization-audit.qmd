@@ -1,0 +1,115 @@
+---
+title: "Assignment 5: Visualization Audit"
+format:
+  html:
+    embed-resources: true
+execute:
+  echo: true
+  warning: false
+  message: false
+---
+
+## Initial Plot Draft
+The visualization created answers the question:
+
+Among adults ages 20-80 in the NHANES classroom dataset, how
+does mean BMI differ by gender? 
+
+Records missing age, BMI, or gender are excluded. The comparison is descriptive and unweighted.
+
+```{r}
+library(readr)
+library(dplyr)
+library(ggplot2)
+
+nhanes <- read_csv(
+  "examples/nhanes-equity/data/nhanes_equity_v6.csv",
+  show_col_types = FALSE
+)
+
+initial_summary <- nhanes |>
+  filter(
+    !is.na(Age),
+    Age >= 20,
+    Age <= 80,
+    !is.na(BMI),
+    !is.na(Gender)
+  ) |>
+  group_by(Gender) |>
+  summarise(
+    n = n(),
+    mean_bmi = mean(BMI),
+    .groups = "drop"
+  )
+
+initial_summary
+```
+
+```{r}
+#| fig-width: 8
+#| fig-height: 6
+initial_plot <- ggplot(
+  initial_summary,
+  aes(x = Gender, y = mean_bmi, fill = Gender)
+) +
+  geom_col(width = 0.62, show.legend = FALSE) +
+  geom_text(
+    aes(label = sprintf("%.1f\nn = %s", mean_bmi, format(n, big.mark = ","))),
+    vjust = 1.2,
+    color = "white",
+    fontface = "bold"
+  ) +
+  scale_fill_manual(values = c("Female" = "#B04A75", "Male" = "#3E6F9E")) +
+  scale_y_continuous(
+    limits = c(0, 35),
+    breaks = seq(0, 35, by = 5),
+    expand = expansion(mult = c(0, 0))
+  ) +
+  labs(
+    title = "Mean BMI by gender among adults aged 20-80",
+    subtitle = sprintf(
+      "Female mean BMI was about %.1f kg/m² higher than male mean BMI",
+      abs(
+        initial_summary$mean_bmi[initial_summary$Gender == "Female"] -
+          initial_summary$mean_bmi[initial_summary$Gender == "Male"]
+      )
+    ),
+    x = "Gender group",
+    y = "Mean BMI (kg/m²)",
+    caption = paste(
+      "Source: prepared NHANES Health Equity classroom CSV.",
+      "Excludes records missing age, BMI, or gender.",
+      "Descriptive and unweighted; not causal or a population estimate.",
+      sep = "\n"
+    )
+  ) +
+  theme_minimal(base_size = 12) +
+  theme(
+    plot.title = element_text(face = "bold", hjust = 0.5, margin = margin(b = 6)),
+    plot.subtitle = element_text(
+      face = "bold",
+      hjust = 0.5,
+      color = "#4D5358",
+      margin = margin(b = 16)
+    ),
+    axis.title.x = element_text(face = "bold"),
+    axis.title.y = element_text(face = "bold"),
+    plot.caption = element_text(hjust = 0, margin = margin(t = 8)),
+    plot.margin = margin(t = 12, r = 14, b = 12, l = 14)
+  )
+
+initial_plot
+```
+
+## Visualization revisions
+The first draft of the visualisation, made with R and ggplot2, had several issues.
+
+The biggest issue was that the AI could not tell how the code would look once rendered. As a result, the plot had overlapping labels and titles, titles that were not centred, and axis labels that were not bolded, which hurt readability. I fixed this by describing the spacing problems to the AI and then checking each new rendered version myself.
+
+The initial plot also used the same colour for both groups, male and female, which made it look as if the same group was being shown twice. I asked the AI to recolour the bars, using pink for females and blue for males, a common convention for representing gender.
+
+Finally, the original plot showed only the key numerical result. It left out important context, such as whether the comparison was causal or descriptive, whether the estimates were weighted, and how many records were behind each group. To address this, I gathered the information needed for the caption and asked the AI to add it.
+
+I refined the plot so the comparison is easier to read and interpret. The descriptive title identifies the statistic, the groups and the age range, and the subtitle summarises the observed difference without suggesting that it is causal or statistically significant. The axes are labelled with the gender grouping and the BMI units, and each bar shows its group's mean and sample size, so readers can see both the estimate and the number of records behind it.
+
+The muted pink and blue distinguish the two groups, and the centred bold title, bold axis titles and improved spacing make the chart hierarchy clearer. The y-axis starts at zero, which matters for a bar chart because bar length encodes magnitude, so the relatively small difference is not exaggerated. The caption identifies the prepared classroom dataset, the age and missing-data exclusions, and the descriptive, unweighted nature of the comparison.
