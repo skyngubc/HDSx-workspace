@@ -1,0 +1,88 @@
+---
+title: "Assignment 6: Preliminary EDA"
+format: html
+---
+
+## Data and Cohort
+
+The analysis uses the NHANES equity classroom snapshot. The analysis cohort includes records with age from 20 through 80 years (inclusive). Records with missing age or age outside this range are excluded before summaries.
+
+```{r}
+#| label: load-data
+#| message: false
+library(tidyverse)
+
+# AI prompt: Load the committed NHANES snapshot using a project-relative path.
+# Verified: The file exists at this path when Quarto executes from the project root.
+nhanes <- read_csv(
+  "examples/nhanes-equity/data/nhanes_equity_v6.csv",
+  show_col_types = FALSE
+)
+
+# AI prompt: Define the requested age 20-80 cohort, inclusive.
+# Verified: The cohort filter includes both age boundaries and drops records with missing Age.
+analysis_cohort <- nhanes |>
+  filter(Age >= 20, Age <= 80)
+
+tibble(
+  snapshot_rows = nrow(nhanes),
+  missing_age_rows = sum(is.na(nhanes$Age)),
+  out_of_range_age_rows = sum(
+    !is.na(nhanes$Age) & (nhanes$Age < 20 | nhanes$Age > 80)
+  ),
+  cohort_rows = nrow(analysis_cohort),
+  excluded_rows = nrow(nhanes) - nrow(analysis_cohort)
+) |>
+  knitr::kable(caption = "Snapshot and age-eligible cohort counts")
+```
+
+## Missingness
+
+Missingness is assessed in the age-eligible cohort for the three variables needed for this analysis: `Age`, `BMI`, and `IncomeGroup`. The `Age` missing count is zero by cohort definition; any missing ages in the source snapshot are reported in the cohort counts above. Before interpreting Table 1, note that its summaries use complete cases for these variables only; records missing any one of them are excluded from Table 1. No imputation is performed, and missing values in unrelated columns do not determine inclusion.
+
+```{r}
+#| label: missingness
+# AI prompt: Summarize missingness for the Table 1 variables in the eligible cohort.
+# Verified: Counts and percentages use the cohort size as the denominator.
+missingness <- analysis_cohort |>
+  summarise(across(c(Age, BMI, IncomeGroup), ~ sum(is.na(.x)))) |>
+  pivot_longer(
+    cols = everything(),
+    names_to = "Variable",
+    values_to = "Missing n"
+  ) |>
+  mutate(
+    `Cohort N` = nrow(analysis_cohort),
+    `Missing %` = 100 * `Missing n` / `Cohort N`
+  ) |>
+  select(Variable, `Cohort N`, `Missing n`, `Missing %`)
+
+knitr::kable(missingness, digits = 1, caption = "Missingness in the age-eligible cohort")
+```
+
+## Table 1
+
+Table 1 reports the number of complete records in each income group and the mean (standard deviation) of BMI and age. The denominator can differ across groups because records missing an analysis variable are excluded as described above.
+
+```{r}
+#| label: table1
+# AI prompt: Create a Table 1 by IncomeGroup with N and BMI/age mean (SD), then export it.
+# Verified: Each group uses records complete on Age, BMI, and IncomeGroup; SD uses sd(), not variance.
+table1 <- analysis_cohort |>
+  filter(complete.cases(Age, BMI, IncomeGroup)) |>
+  group_by(IncomeGroup) |>
+  summarise(
+    N = n(),
+    `BMI, mean (SD)` = sprintf("%.1f (%.1f)", mean(BMI), sd(BMI)),
+    `Age, mean (SD)` = sprintf("%.1f (%.1f)", mean(Age), sd(Age)),
+    .groups = "drop"
+  )
+
+knitr::kable(table1, caption = "Descriptive summary by income group")
+
+write_csv(table1, "assignments/assignment06-eda-ai-audit/submission/table1.csv")
+```
+
+## Methods
+
+This is a descriptive, unweighted analysis of the classroom snapshot. Table 1 uses complete cases after missingness was reported; if records missing BMI, age, or income differ systematically from included records, these summaries may be biased. The results describe the age-eligible complete-case records in this dataset, not population estimates, and do not support causal conclusions about income and BMI.
