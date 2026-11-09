@@ -18,47 +18,39 @@ Copilot helped me improve the dashboard presentation and documentation for Assig
 
    **How I checked it:** I regenerated `dashboard-preview.png` from the rendered HTML’s embedded plot and inspected the image to confirm it reflects the updated styling.
 
-4. **AI prompt:** “Please make sure these tasks are properly completed,” followed by the Assignment 7 reproducibility requirements.
-
-   **How I checked it:** I checked that `reproducibility-note.md` names the render command and relative dataset path, and that its Codespace statement agrees with `testing-log.md`. The successful render was in this workspace; a fresh-Codespace render has not been run.
-
-5. **AI prompt:** “Please improve the AI use note,” followed by the Assignment 7 requirement to say what AI helped with and how the result was verified.
-
-   **How I checked it:** I reviewed the note against the actual changes and the testing log and confirmed that it accurately reflects the work that was done.
-
-6. **AI prompt:** “Read the Assignment 7 instructions and `assignments/assignment07-dashboard/submission/dashboard.qmd`. Summarize the required 1-1-1-1-1 components and identify what I still need to complete. Do not edit the file yet.”
+4. **AI prompt:** “Read the Assignment 7 instructions and `assignments/assignment07-dashboard/submission/dashboard.qmd`. Summarize the required 1-1-1-1-1 components and identify what I still need to complete. Do not edit the file yet.”
 
    **How I checked it:** I compared the summary with the assignment checklist and confirmed that it distinguished required deliverables from optional suggestions.
 
 
-7. **AI prompt:** “Review the setup chunk in `dashboard.qmd`. Are the dataset path and column names consistent with the repository? Keep paths relative and explain any issue without using local-only files or credentials.”
+5. **AI prompt:** “Review the setup chunk in `dashboard.qmd`. Are the dataset path and column names consistent with the repository? Keep paths relative and explain any issue without using local-only files or credentials.”
 
    **How I checked it:** I confirmed the dataset was tracked at the stated repository-relative path and that the dashboard rendered from the repository root.
 
-8. **AI prompt:** “Check whether `selected_income` is a valid, editable control for this static dashboard and whether the file explains how to change it. Suggest clear instructions without converting this assignment into a Shiny app.”
+6. **AI prompt:** “Check whether `selected_income` is a valid, editable control for this static dashboard and whether the file explains how to change it. Suggest clear instructions without converting this assignment into a Shiny app.”
 
    **How I checked it:** I tested another valid income value, rendered again, and confirmed that the table and plot updated as expected.
 
-9. **AI prompt:** “Explain what the current filter and grouped summary calculate. Check that the summary matches the audience question, and flag anything that would change the analysis before suggesting a change.”
+7. **AI prompt:** “Explain what the current filter and grouped summary calculate. Check that the summary matches the audience question, and flag anything that would change the analysis before suggesting a change.”
 
     **How I checked it:** I compared the explanation with the actual filter, grouping, and summary code and independently checked a few output values.
 
-10. **AI prompt:** “Review the chart in `dashboard.qmd` for readability and whether its title and axis labels explain what is plotted. Suggest presentation improvements without changing the data or statistic.”
+8. **AI prompt:** “Review the chart in `dashboard.qmd` for readability and whether its title and axis labels explain what is plotted. Suggest presentation improvements without changing the data or statistic.”
 
     **How I checked it:** I rendered the chart and checked legibility, labels, and alignment; I confirmed that only presentation code changed.
 
-11. **AI prompt:** “Draft a concise chart caption for a public-health analyst. It should state the unweighted mean, dataset, age cohort, exclusions, and limitations; do not imply survey-weighted estimates, national prevalence, or causation.”
+9. **AI prompt:** “Draft a concise chart caption for a public-health analyst. It should state the unweighted mean, dataset, age cohort, exclusions, and limitations; do not imply survey-weighted estimates, national prevalence, or causation.”
 
     **How I checked it:** I checked every claim against the code and data preparation and ensured the caption did not overstate what the descriptive results support.
 
-12. **AI prompt:** “Using only the pattern shown by the table and chart, suggest a plain-language interpretation and one limitation. Avoid causal explanations and do not claim more than these descriptive data support.”
+10. **AI prompt:** “Using only the pattern shown by the table and chart, suggest a plain-language interpretation and one limitation. Avoid causal explanations and do not claim more than these descriptive data support.”
 
     **How I checked it:** I compared the interpretation with the displayed values and ensured the limitation was reflected in or alongside the dashboard.
 
-13. **AI prompt:** “Review the proposed dashboard output and preview for privacy concerns. Confirm that it shows aggregate summaries rather than row-level records, and flag any small-cell concern without exposing individual data.”
+11. **AI prompt:** “Review the proposed dashboard output and preview for privacy concerns. Confirm that it shows aggregate summaries rather than row-level records, and flag any small-cell concern without exposing individual data.”
 
     **How I checked it:** I inspected the rendered page and screenshot to confirm that they contained no row-level records and that small groups were not interpreted as stable findings.
 
-14. **AI prompt:** “Give me the repository-root Quarto command to render `dashboard.qmd` and a short checklist for testing it with another valid `selected_income` value. Tell me what should update and what to record if rendering fails.”
+12. **AI prompt:** “Give me the repository-root Quarto command to render `dashboard.qmd` and a short checklist for testing it with another valid `selected_income` value. Tell me what should update and what to record if rendering fails.”
 
     **How I checked it:** I ran the command from the repository root, tested a second valid value, and recorded the actual result and any error in `testing-log.md`.
